@@ -15,8 +15,8 @@ def get_observation(mu,var):
     normal_rand = np.random.randn(mu.size)
     return np.sqrt(var)*normal_rand + mu
 
-N = 15 # number of states
-M = 20 # Number of observations
+N = 3 # number of states
+M = 10 # Number of observations
 
 # Set up true Markov chain parameters and the distribution parameters
 pi_true = np.ones(N)/N
@@ -36,6 +36,7 @@ T = 8000
 true_state_vec = np.zeros(T)
 est_state_vec = np.zeros(T)
 est_state_vec2 = np.zeros(T)
+est_state_vec3 = np.zeros(T)
 observation_vec = np.zeros((M,T))
 
 bounds = np.array([0] + np.cumsum(pi_est).tolist())
@@ -96,20 +97,22 @@ for jj in range(iters):
         # Get current state estimate
         est_state_vec[tt] = state_idx[gamma[:,tt] == gamma[:,tt].max()][0]
         est_state_vec2[tt] = state_idx[little_b[:,tt] == little_b[:,tt].max()][0]
+        est_state_vec3[tt] = state_idx[alpha[:,tt] == alpha[:,tt].max()][0]
         
     print np.sum(true_state_vec-est_state_vec==0)/float(T)
     print np.sum(true_state_vec-est_state_vec2==0)/float(T)
+    print np.sum(true_state_vec-est_state_vec3==0)/float(T)
     
     tmp_mu = np.zeros((M,N))
     tmp_var = np.zeros((M,N))
     for ii in range(N):
-        gamma_mat = np.tile(gamma[ii,:],(M,1))
-        tmp_mu[:,ii]  = np.sum(gamma_mat*observation_vec,axis=1)/gamma[ii,:].sum()
-        tmp_var[:,ii] = np.sum(gamma_mat*(np.tile(tmp_mu[:,ii],(T,1)).T-observation_vec)**2,axis=1)/gamma[ii,:].sum()
+#         gamma_mat = np.tile(gamma[ii,:],(M,1))
+#         tmp_mu[:,ii]  = np.sum(gamma_mat*observation_vec,axis=1)/gamma[ii,:].sum()
+#         tmp_var[:,ii] = np.sum(gamma_mat*(np.tile(tmp_mu[:,ii],(T,1)).T-observation_vec)**2,axis=1)/gamma[ii,:].sum()
         
-#         little_b_mat = np.tile(little_b[ii,:],(M,1))
-#         tmp_mu[:,ii]  = np.sum(little_b_mat*observation_vec,axis=1)/little_b[ii,:].sum()
-#         tmp_var[:,ii] = np.sum(little_b_mat*(np.tile(tmp_mu[:,ii],(T,1)).T-observation_vec)**2,axis=1)/little_b[ii,:].sum()
+        little_b_mat = np.tile(little_b[ii,:],(M,1))
+        tmp_mu[:,ii]  = np.sum(little_b_mat*observation_vec,axis=1)/little_b[ii,:].sum()
+        tmp_var[:,ii] = np.sum(little_b_mat*(np.tile(tmp_mu[:,ii],(T,1)).T-observation_vec)**2,axis=1)/little_b[ii,:].sum()
         
         mu_est = tmp_mu.copy()
         var_est = tmp_var.copy()
