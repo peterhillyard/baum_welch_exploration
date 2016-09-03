@@ -117,7 +117,7 @@ for jj in range(iters):
         mu_est = tmp_mu.copy()
         var_est = tmp_var.copy()
         
-    print tmp_mu
-    print mu_true
-    print tmp_var
-    print var_true
+#     print tmp_mu
+#     print mu_true
+#     print tmp_var
+#     print var_true
